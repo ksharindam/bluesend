@@ -3,11 +3,11 @@
 import os, sys
 import dbus
 from dbus.exceptions import DBusException
-from dbus.mainloop.pyqt5 import DBusQtMainLoop
+from dbus.mainloop.pyqt6 import DBusQtMainLoop
 
-from PyQt5 import QtCore
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QDialog, QGridLayout, QTableView, QDialogButtonBox,
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import (QApplication, QMainWindow, QDialog, QGridLayout, QTableView, QDialogButtonBox,
                         QAbstractItemView, QTableWidget, QHeaderView, QTableWidgetItem,
                         QWidget, QMessageBox, QProgressBar, QLabel)
 
@@ -50,18 +50,19 @@ class DeviceDialog(QDialog):
         # set up device list table
         self.tableView = QTableWidget(0, 1, self)
         self.tableView.setAlternatingRowColors(True)
-        self.tableView.setSelectionBehavior(QAbstractItemView.SelectRows) # Select Rows
-        self.tableView.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.tableView.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-        #self.horizontalHeader().setResizeMode(1, QHeaderView.Stretch)
-        self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.tableView.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows) # Select Rows
+        self.tableView.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.tableView.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        #self.horizontalHeader().setResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        self.tableView.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.tableView.horizontalHeader().setHidden(True)
         self.tableView.verticalHeader().setHidden(True)
         self.gridLayout.addWidget(self.tableView, 0, 0, 1, 1)
 
         self.buttonBox = QDialogButtonBox(self)
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
+        self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Ok|
+                                          QDialogButtonBox.StandardButton.Cancel)
         self.gridLayout.addWidget(self.buttonBox, 1, 0, 1, 1)
 
         self.tableView.cellDoubleClicked.connect(self.accept)
@@ -146,7 +147,7 @@ class Window(QMainWindow):
     def __init__(self, filenames):
         QMainWindow.__init__(self)
         self.setupUi()
-        self.setWindowIcon(QIcon(':/bluesend.png'))
+        self.setWindowIcon(QIcon(':/icons/bluesend.png'))
         self.completed_size = 0 # total size of the finished files
         self.allfiles_size = 0 # total size of all files selected
         self.transfer_path = None
@@ -156,14 +157,14 @@ class Window(QMainWindow):
         self.tableView.setRowCount(len(self.filenames))
         for row, filename in enumerate (self.filenames):
             item = QTableWidgetItem(os.path.basename(filename))
-            item.setIcon( QIcon(':/document.png') )
+            item.setIcon( QIcon(':/icons/document.png') )
             self.tableView.setItem(row, 0, item)
             self.allfiles_size += os.path.getsize(filename)
 
         self.show()
 
         dlg = DeviceDialog(self)
-        if (dlg.exec_()==QDialog.Accepted):
+        if (dlg.exec()==QDialog.DialogCode.Accepted):
             dev_addr = dlg.selectedDeviceAddress()
             self.sendFiles(dev_addr)
 
@@ -181,8 +182,8 @@ class Window(QMainWindow):
         self.statusbar = QLabel(self)
         # Add ButtonBox
         self.buttonBox = QDialogButtonBox(self.centralwidget)
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel)
+        self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel)
         # Add widgets to grid layout
         self.gridLayout.addWidget(self.tableView, 0, 0, 1, 2)
         self.gridLayout.addWidget(self.progressBar, 1, 0, 1, 2)
@@ -193,8 +194,8 @@ class Window(QMainWindow):
         self.tableView.verticalHeader().setHidden(True)
         self.tableView.setAlternatingRowColors(True)
         #self.tableView.setSelectionBehavior(QAbstractItemView.SelectRows) # Select Rows
-        self.tableView.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-        self.tableView.setTextElideMode(QtCore.Qt.ElideMiddle)
+        self.tableView.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        self.tableView.setTextElideMode(Qt.TextElideMode.ElideMiddle)
 
         self.buttonBox.rejected.connect(self.close)
 
@@ -250,14 +251,14 @@ class Window(QMainWindow):
             speed = (value - self.transferred) / 1024
             self.statusbar.setText("%d kB/s" % speed)
             progress = 100*(self.completed_size+value)/self.allfiles_size
-            self.progressBar.setValue(progress)
+            self.progressBar.setValue(int(progress))
             self.setWindowTitle("Sending File (%d%%)" % progress)
             self.transferred = value
 
         if status=="complete":
             #print("Transfer : complete")
             item = self.tableView.item(self.current_index, 0)
-            item.setIcon( QIcon(':/dialog-ok-apply.png') )
+            item.setIcon( QIcon(':/icons/dialog-ok-apply.png') )
             self.statusbar.setText("0 kB/s")
             self.completed_size += self.transfer_size
             self.current_index += 1
@@ -287,7 +288,7 @@ def main():
                 filenames.append(os.path.abspath(path))
 
     win = Window(filenames)
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 if __name__ == "__main__":
     main()

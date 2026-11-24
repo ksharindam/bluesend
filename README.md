@@ -2,13 +2,15 @@
 Send files via bluetooth obex  
 
 ### Dependencies
- * python3-pyqt5  
+ * python3-pyqt6  
  * bluez-obexd  
  * bluez  
+ * python3-dbus  
+ * python3-dbus.mainloop.pyqt6  
 
 
 ### Install
-Open terminal and change directory to bluesend-qt5-master. Then run...  
+Open terminal and change directory to project source. Then run...  
 `pip3 install --user .`  
 
 ### Uninstall

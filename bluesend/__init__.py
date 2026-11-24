@@ -2,14 +2,10 @@
 Name = BlueSend
 Executable Command = bluesend
 Package Name = bluesend
-Python Module Name = bluesend
-Debian Dependency = python3-pyqt5, bluez-obexd
-Description = 'Send files via Bluetooth'
-Changes :
-v0.2    added : window icon
+Description = Send files via Bluetooth
 
 ............................................................................
-|   Copyright (C) 2021 Arindam Chaudhuri <ksharindam@gmail.com>            |
+|   Copyright (C) 2021-2026 Arindam Chaudhuri <ksharindam@gmail.com>       |
 |                                                                          |
 |   This program is free software: you can redistribute it and/or modify   |
 |   it under the terms of the GNU General Public License as published by   |
@@ -25,6 +21,8 @@ v0.2    added : window icon
 |   along with this program.  If not, see <http://www.gnu.org/licenses/>.  |
 ............................................................................
 """
-# TODO:
 
-__version__ = '0.2'
+__version__ = '1.0'
+COPYRIGHT_YEAR = "2021-2026"
+AUTHOR_NAME = "Arindam Chaudhuri"
+AUTHOR_EMAIL = "ksharindam@gmail.com"
